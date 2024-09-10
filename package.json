@@ -7,7 +7,7 @@
     "start": "cd src && node index.js",
     "lint": "eslint .",
     "run": "cd src && node index.js",
-    "test": "jest"
+    "test": "NODE_ENV=dev jest"
   },
   "license": "MIT",
   "dependencies": {
