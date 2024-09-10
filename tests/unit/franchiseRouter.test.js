@@ -30,7 +30,6 @@ describe("franchise Router tests", () => {
   let loginRes;
   let franchises;
   let stores;
-  let newFranchises = [];
 
   beforeAll(async () => {
     admin = await createAdminUser()

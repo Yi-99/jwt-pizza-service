@@ -27,7 +27,7 @@ describe("order router tests", () => {
   let authtoken;
   beforeAll(async () => {
     admin = await createAdminUser();
-    loginRes = await request(app).put('/api/auth').send({
+    const loginRes = await request(app).put('/api/auth').send({
       email: admin.email,
       password: 'toomanysecrets'
     });

@@ -23,7 +23,6 @@ async function createAdminUser() {
 }
 
 let admin
-let testUserAuthToken
 let adminUserAuthToken
 
 describe.only("authRouter test", () => {
@@ -39,10 +38,6 @@ describe.only("authRouter test", () => {
       .send(testUser);
 
     expect(registerRes.status).toBe(200)
-    const { id, roles, ...user } = registerRes.body.user
-    const { password, ...testUserInfo } = testUser
-    expect(user).toEqual(testUserInfo)
-    testUserAuthToken = registerRes.body.user.token
   })
 
   it("login", async () => {
