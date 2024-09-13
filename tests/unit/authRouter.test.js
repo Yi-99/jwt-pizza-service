@@ -25,7 +25,7 @@ async function createAdminUser() {
 let admin
 let adminUserAuthToken
 
-describe.only("authRouter test", () => {
+describe("authRouter test", () => {
   const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
 
   beforeAll(async () => {
@@ -70,13 +70,4 @@ describe.only("authRouter test", () => {
     expect(name).toEqual(admin.name);
     expect(roles).toEqual(admin.roles);
   })
-
-  // it("logouts a user", async () => {
-  //   const logoutRes = await request(app)
-  //     .delete(`/api/auth`)
-  //     .set('Authorization', `Bearer ${adminUserAuthToken}`)
-  //     .send()
-  //   expect(logoutRes.status).toBe(200)
-  //   expect(logoutRes.body.message).toBe('logout successful')
-  // })
 })
