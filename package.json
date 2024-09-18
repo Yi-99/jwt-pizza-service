@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "run": "cd src && node index.js",
     "test": "NODE_ENV=dev jest",
+    "test:deploy": "NODE_ENV=deploy jest",
     "dev": "cd src && NODE_ENV=dev node index.js"
   },
   "license": "MIT",
