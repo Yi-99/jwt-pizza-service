@@ -17,7 +17,7 @@ class Metrics {
     this.activeUsers = 0;
 
     // This will periodically sent metrics to Grafana
-    if (process.env.NODE_ENV === 'prod') {
+    if (process.env.NODE_ENV === 'dev') {
 
       const timer = setInterval(() => {
         this.sendMetricToGrafana('request', 'all', this.totalRequests);
