@@ -2,6 +2,7 @@ const express = require('express');
 const { DB, Role } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { StatusCodeError, asyncHandler } = require('../endpointHelper.js');
+const metrics = require('../metrics.js');
 
 const franchiseRouter = express.Router();
 
@@ -59,6 +60,7 @@ franchiseRouter.endpoints = [
 franchiseRouter.get(
   '/',
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('GET');
     res.json(await DB.getFranchises(req.user));
   })
 );
@@ -68,6 +70,7 @@ franchiseRouter.get(
   '/:userId',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('GET');
     let result = [];
     const userId = Number(req.params.userId);
     if (req.user.id === userId || req.user.isRole(Role.Admin)) {
@@ -83,6 +86,7 @@ franchiseRouter.post(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('POST');
     if (!req.user.isRole(Role.Admin)) {
       throw new StatusCodeError('unable to create a franchise', 403);
     }
@@ -96,6 +100,7 @@ franchiseRouter.post(
 franchiseRouter.delete(
   '/:franchiseId',
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('DELETE');
     if (!req.user.isRole(Role.Admin)) {
       throw new StatusCodeError('unable to delete a franchise', 403);
     }
@@ -111,6 +116,7 @@ franchiseRouter.post(
   '/:franchiseId/store',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('POST');
     const franchiseId = Number(req.params.franchiseId);
     const franchise = await DB.getFranchise({ id: franchiseId });
     if (!franchise || (!req.user.isRole(Role.Admin) && !franchise.admins.some((admin) => admin.id === req.user.id))) {
@@ -126,6 +132,7 @@ franchiseRouter.delete(
   '/:franchiseId/store/:storeId',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('DELETE');
     const franchiseId = Number(req.params.franchiseId);
     const franchise = await DB.getFranchise({ id: franchiseId });
     if (!franchise || (!req.user.isRole(Role.Admin) && !franchise.admins.some((admin) => admin.id === req.user.id))) {

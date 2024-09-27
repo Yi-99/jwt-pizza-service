@@ -3,6 +3,7 @@ const config = require('../config.js');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
+const metrics = require('../metrics.js');
 
 const orderRouter = express.Router();
 
@@ -44,6 +45,7 @@ orderRouter.endpoints = [
 orderRouter.get(
   '/menu',
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('GET');
     res.send(await DB.getMenu());
   })
 );
@@ -53,6 +55,7 @@ orderRouter.put(
   '/menu',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('PUT');
     if (!req.user.isRole(Role.Admin)) {
       throw new StatusCodeError('unable to add menu item', 403);
     }
@@ -68,6 +71,7 @@ orderRouter.get(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('GET');
     res.json(await DB.getOrders(req.user, req.query.page));
   })
 );
@@ -77,15 +81,31 @@ orderRouter.post(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('POST');
     const orderReq = req.body;
     const order = await DB.addDinerOrder(req.user, orderReq);
+    let price = 0;
+    orderReq.items.forEach((item) => { 
+      price += item.price;
+      metrics.incrementCount();
+    });
+    console.debug(price);
+    metrics.addRevenue(price);
+    price = 0;
+
+    const start = Date.now();
     const r = await fetch(`${config.factory.url}/api/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', authorization: `Bearer ${config.factory.apiKey}` },
       body: JSON.stringify({ diner: { id: req.user.id, name: req.user.name, email: req.user.email }, order }),
     });
+    const end = Date.now();
+    const latency = end - start;
+    console.debug("Latency:", latency);
+    metrics.addLatency(latency);
     const j = await r.json();
     if (r.ok) {
+
       res.send({ order, jwt: j.jwt, reportUrl: j.reportUrl });
     } else {
       res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: j.reportUrl });
