@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const config = require('./config.js');
 const os = require('os');
 
@@ -18,7 +20,7 @@ class Metrics {
 
     // This will periodically sent metrics to Grafana
     if (process.env.NODE_ENV === 'dev') {
-
+      console.error(process.env.NODE_ENV);
       const timer = setInterval(() => {
         this.sendMetricToGrafana('request', 'all', this.totalRequests);
         
@@ -40,19 +42,21 @@ class Metrics {
   }
 
   incrementRequests(httpMethod) {
-    this.totalRequests++;
-    if (httpMethod === 'POST') {
-      this.postRequests++;
-      this.sendMetricToGrafana('request', 'post', this.postRequests);
-    } else if (httpMethod === 'GET') {
-      this.getRequests++;
-      this.sendMetricToGrafana('request', 'get', this.getRequests);
-    } else if (httpMethod === 'DELETE') {
-      this.deleteRequests++;
-      this.sendMetricToGrafana('request', 'delete', this.deleteRequests);
-    } else if (httpMethod === 'PUT') {
-      this.putRequests++;
-      this.sendMetricToGrafana('request', 'put', this.putRequests);
+    if (process.env.NODE_ENV === 'dev') {
+      this.totalRequests++;
+      if (httpMethod === 'POST') {
+        this.postRequests++;
+        this.sendMetricToGrafana('request', 'post', this.postRequests);
+      } else if (httpMethod === 'GET') {
+        this.getRequests++;
+        this.sendMetricToGrafana('request', 'get', this.getRequests);
+      } else if (httpMethod === 'DELETE') {
+        this.deleteRequests++;
+        this.sendMetricToGrafana('request', 'delete', this.deleteRequests);
+      } else if (httpMethod === 'PUT') {
+        this.putRequests++;
+        this.sendMetricToGrafana('request', 'put', this.putRequests);
+      }
     }
   }
 

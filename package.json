@@ -7,7 +7,7 @@
     "start": "cd src && node index.js",
     "lint": "eslint .",
     "run": "cd src && node index.js",
-    "test": "NODE_ENV=dev jest",
+    "test": "NODE_ENV=test jest",
     "test:deploy": "NODE_ENV=deploy jest",
     "dev": "cd src && NODE_ENV=dev node index.js"
   },
