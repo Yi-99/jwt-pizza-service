@@ -17,23 +17,26 @@ class Metrics {
     this.activeUsers = 0;
 
     // This will periodically sent metrics to Grafana
-    const timer = setInterval(() => {
-      this.sendMetricToGrafana('request', 'all', this.totalRequests);
+    if (NODE_ENV === 'prod') {
 
-      const cpuUsage = this.getCpuUsagePercentage();
-      const memoryUsage = this.getMemoryUsagePercentage();
-
-      this.sendLatency();
-      this.sendFailures();
-      this.sendSuccesses();
-      this.sendNumOfPizzasSold();
-      this.sendRevenue();
-      this.sendActiveUsers();
-
-      this.sendMetricToGrafana('osMetrics', 'cpu', cpuUsage);
-      this.sendMetricToGrafana('osMetrics', 'memory', memoryUsage);
-    }, 10000);
-    timer.unref();
+      const timer = setInterval(() => {
+        this.sendMetricToGrafana('request', 'all', this.totalRequests);
+        
+        const cpuUsage = this.getCpuUsagePercentage();
+        const memoryUsage = this.getMemoryUsagePercentage();
+        
+        this.sendLatency();
+        this.sendFailures();
+        this.sendSuccesses();
+        this.sendNumOfPizzasSold();
+        this.sendRevenue();
+        this.sendActiveUsers();
+        
+        this.sendMetricToGrafana('osMetrics', 'cpu', cpuUsage);
+        this.sendMetricToGrafana('osMetrics', 'memory', memoryUsage);
+      }, 10000);
+      timer.unref();
+    }
   }
 
   incrementRequests(httpMethod) {
